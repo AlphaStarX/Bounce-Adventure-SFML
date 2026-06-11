@@ -5,10 +5,11 @@
 
 namespace BounceAdventure
 {
-LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, sf::RenderWindow& window, int completedLevel, int coins)
+LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, AudioManager& audio, sf::RenderWindow& window, int completedLevel, int coins)
     : m_sceneManager(sceneManager)
     , m_input(input)
     , m_assets(assets)
+    , m_audio(audio)
     , m_window(window)
     , m_title(assets.font("default", "assets/fonts/arial.ttf"), "LEVEL COMPLETE!", 44)
     , m_statsLabel(assets.font("default", "assets/fonts/arial.ttf"), "Coins Collected: " + std::to_string(coins), 24)
@@ -28,7 +29,7 @@ LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager&
     // Next Level Button
     Button nextButton(font, "Next Level", {centerX, 380.0f}, {240.0f, 50.0f});
     nextButton.setCallback([this, completedLevel, coins]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, completedLevel + 1, coins));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, completedLevel + 1, coins));
     });
     m_buttons.push_back(std::move(nextButton));
 
@@ -36,7 +37,7 @@ LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager&
     Button menuButton(font, "Main Menu", {centerX, 460.0f}, {240.0f, 50.0f});
     menuButton.setCallback([this]() {
         m_sceneManager.clear();
-        m_sceneManager.push(std::make_unique<MainMenuScene>(m_sceneManager, m_input, m_assets, m_window));
+        m_sceneManager.push(std::make_unique<MainMenuScene>(m_sceneManager, m_input, m_assets, m_audio, m_window));
     });
     m_buttons.push_back(std::move(menuButton));
 }

@@ -5,10 +5,11 @@
 
 namespace BounceAdventure
 {
-MainMenuScene::MainMenuScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, sf::RenderWindow& window)
+MainMenuScene::MainMenuScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, AudioManager& audio, sf::RenderWindow& window)
     : m_sceneManager(sceneManager)
     , m_input(input)
     , m_assets(assets)
+    , m_audio(audio)
     , m_window(window)
     , m_title(assets.font("default", "assets/fonts/arial.ttf"), "BOUNCE ADVENTURE", 54)
     , m_subtitle(assets.font("default", "assets/fonts/arial.ttf"), "Modern C++ & SFML 2D Platformer", 20)
@@ -28,14 +29,14 @@ MainMenuScene::MainMenuScene(SceneManager& sceneManager, InputManager& input, As
     // Start Game Button
     Button startButton(font, "Start Game", {centerX, 340.0f}, {240.0f, 50.0f});
     startButton.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 1));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 1));
     });
     m_buttons.push_back(std::move(startButton));
 
     // Select Level Button
     Button selectButton(font, "Select Level", {centerX, 410.0f}, {240.0f, 50.0f});
     selectButton.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<LevelSelectScene>(m_sceneManager, m_input, m_assets, m_window));
+        m_sceneManager.replace(std::make_unique<LevelSelectScene>(m_sceneManager, m_input, m_assets, m_audio, m_window));
     });
     m_buttons.push_back(std::move(selectButton));
 

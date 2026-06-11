@@ -16,6 +16,7 @@
 namespace BounceAdventure
 {
 static constexpr float RespawnFallY = 1500.0f;
+static constexpr float InvulnerabilityDuration = 1.5f;
 
 static const std::vector<std::pair<std::string, std::string>> levelDefs = {
     {"level_01.txt", "Learning Basics"},
@@ -26,10 +27,11 @@ static const std::vector<std::pair<std::string, std::string>> levelDefs = {
     {"level_06.txt", "Final Challenge"},
 };
 
-GameScene::GameScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, sf::RenderWindow& window, int startLevel, int coins)
+GameScene::GameScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, AudioManager& audio, sf::RenderWindow& window, int startLevel, int coins)
     : m_sceneManager(sceneManager)
     , m_input(input)
     , m_assets(assets)
+    , m_audio(audio)
     , m_window(window)
     , m_hud(assets)
     , m_level(loadLevel(std::filesystem::path("assets") / "levels" / "level_01.txt", 1, "Learning Basics"))
@@ -38,6 +40,13 @@ GameScene::GameScene(SceneManager& sceneManager, InputManager& input, AssetManag
           {0.0f, 0.0f},
           {static_cast<float>(GameConfig::WindowWidth), static_cast<float>(GameConfig::WindowHeight)}))
 {
+    // Load sound effects (idempotent — AudioManager silently ignores duplicates)
+    m_audio.loadSound("jump", "assets/sounds/jump.wav");
+    m_audio.loadSound("coin", "assets/sounds/coin.wav");
+    m_audio.loadSound("hazard", "assets/sounds/hazard.wav");
+    m_audio.loadSound("checkpoint", "assets/sounds/checkpoint.wav");
+    m_audio.loadSound("goal", "assets/sounds/goal.wav");
+
     m_coinsCollected = coins;
     beginLevel(startLevel);
 }
@@ -72,9 +81,15 @@ void GameScene::update(float deltaTime)
         return;
     }
 
+    // Tick invulnerability timer
+    if (m_invulnerabilityTimer > 0.0f)
+    {
+        m_invulnerabilityTimer = std::max(0.0f, m_invulnerabilityTimer - deltaTime);
+    }
+
     if (m_input.wasPressed(InputAction::Pause))
     {
-        m_sceneManager.push(std::make_unique<PauseScene>(m_sceneManager, m_input, m_assets, m_window));
+        m_sceneManager.push(std::make_unique<PauseScene>(m_sceneManager, m_input, m_assets, m_audio, m_window));
         return;
     }
 
@@ -88,7 +103,15 @@ void GameScene::update(float deltaTime)
     m_level.update(deltaTime);
 
     std::vector<sf::FloatRect> platforms = m_level.platformBounds();
+    const bool wasGrounded = m_player.isGrounded();
+    const bool jumpPressed = m_input.wasPressed(InputAction::Jump);
     m_player.update(deltaTime, m_input, platforms);
+
+    // Jump sound: only on an actual jump keypress, not walking off a ledge.
+    if (jumpPressed && wasGrounded && !m_player.isGrounded())
+    {
+        m_audio.playSound("jump");
+    }
 
     auto getMovingPlatformImpulse = [&]() -> sf::Vector2f {
         const CircleCollider playerCircle{m_player.position(), m_player.radius()};
@@ -111,8 +134,10 @@ void GameScene::update(float deltaTime)
     if (m_player.position().y > RespawnFallY)
     {
         m_health.takeDamage(1);
+        m_audio.playSound("hazard");
         if (m_health.isAlive())
         {
+            m_invulnerabilityTimer = InvulnerabilityDuration;
             respawnPlayer();
         }
         else
@@ -127,15 +152,16 @@ void GameScene::update(float deltaTime)
 
     if (playerReachedGoal())
     {
+        m_audio.playSound("goal");
         if (m_currentLevelNumber < 6)
         {
             m_sceneManager.push(std::make_unique<LevelCompleteScene>(
-                m_sceneManager, m_input, m_assets, m_window, m_currentLevelNumber, m_coinsCollected));
+                m_sceneManager, m_input, m_assets, m_audio, m_window, m_currentLevelNumber, m_coinsCollected));
         }
         else
         {
             m_sceneManager.push(std::make_unique<GameCompleteScene>(
-                m_sceneManager, m_input, m_assets, m_window, m_coinsCollected));
+                m_sceneManager, m_input, m_assets, m_audio, m_window, m_coinsCollected));
         }
         return;
     }
@@ -158,7 +184,15 @@ void GameScene::render(sf::RenderWindow& window)
     const sf::View previousView = window.getView();
     window.setView(m_camera);
     m_level.draw(window);
-    m_player.draw(window);
+
+    // Flash the player during invulnerability (toggle visibility on a fast cycle)
+    const bool flashOn = m_invulnerabilityTimer <= 0.0f
+        || static_cast<int>(m_invulnerabilityTimer * 10.0f) % 2 == 0;
+    if (flashOn)
+    {
+        m_player.draw(window);
+    }
+
     window.setView(previousView);
 
     m_hud.draw(window);
@@ -173,6 +207,7 @@ Level GameScene::loadLevel(const std::filesystem::path& path, int number, const 
 void GameScene::beginLevel(int levelNumber)
 {
     m_health.reset();
+    m_invulnerabilityTimer = 0.0f;
     m_currentLevelNumber = levelNumber;
 
     const auto& def = levelDefs[static_cast<std::size_t>(levelNumber) - 1];
@@ -189,11 +224,19 @@ void GameScene::beginLevel(int levelNumber)
 void GameScene::respawnPlayer()
 {
     m_player.respawn(m_checkpointPosition);
+    m_invulnerabilityTimer = InvulnerabilityDuration;
+    m_camera.setCenter(m_player.position());
 }
 
 void GameScene::checkHazardCollisions()
 {
     if (!m_health.isAlive())
+    {
+        return;
+    }
+
+    // Invulnerability frames: don't take damage while the timer is active
+    if (m_invulnerabilityTimer > 0.0f)
     {
         return;
     }
@@ -204,8 +247,10 @@ void GameScene::checkHazardCollisions()
         if (Collision::intersects(playerCircle, hazard.bounds()))
         {
             m_health.takeDamage(1);
+            m_audio.playSound("hazard");
             if (m_health.isAlive())
             {
+                m_invulnerabilityTimer = InvulnerabilityDuration;
                 respawnPlayer();
             }
             else
@@ -226,6 +271,7 @@ void GameScene::checkCollectibleCollisions()
         {
             collectible.collect();
             ++m_coinsCollected;
+            m_audio.playSound("coin");
         }
     }
 }
@@ -239,6 +285,7 @@ void GameScene::checkCheckpointCollisions()
         {
             checkpoint.activate();
             m_checkpointPosition = checkpoint.respawnPosition();
+            m_audio.playSound("checkpoint");
         }
     }
 }

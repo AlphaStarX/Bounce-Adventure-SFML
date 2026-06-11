@@ -5,10 +5,11 @@
 
 namespace BounceAdventure
 {
-LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, sf::RenderWindow& window)
+LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, AudioManager& audio, sf::RenderWindow& window)
     : m_sceneManager(sceneManager)
     , m_input(input)
     , m_assets(assets)
+    , m_audio(audio)
     , m_window(window)
     , m_title(assets.font("default", "assets/fonts/arial.ttf"), "SELECT LEVEL", 44)
 {
@@ -30,21 +31,21 @@ LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& inp
     // Level 1
     Button lvl1(font, "Level 1", {centerX - xOffset, y1}, btnSize);
     lvl1.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 1));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 1));
     });
     m_buttons.push_back(std::move(lvl1));
 
     // Level 2
     Button lvl2(font, "Level 2", {centerX, y1}, btnSize);
     lvl2.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 2));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 2));
     });
     m_buttons.push_back(std::move(lvl2));
 
     // Level 3
     Button lvl3(font, "Level 3", {centerX + xOffset, y1}, btnSize);
     lvl3.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 3));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 3));
     });
     m_buttons.push_back(std::move(lvl3));
 
@@ -52,28 +53,28 @@ LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& inp
     // Level 4
     Button lvl4(font, "Level 4", {centerX - xOffset, y2}, btnSize);
     lvl4.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 4));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 4));
     });
     m_buttons.push_back(std::move(lvl4));
 
     // Level 5
     Button lvl5(font, "Level 5", {centerX, y2}, btnSize);
     lvl5.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 5));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 5));
     });
     m_buttons.push_back(std::move(lvl5));
 
     // Level 6
     Button lvl6(font, "Level 6", {centerX + xOffset, y2}, btnSize);
     lvl6.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_window, 6));
+        m_sceneManager.replace(std::make_unique<GameScene>(m_sceneManager, m_input, m_assets, m_audio, m_window, 6));
     });
     m_buttons.push_back(std::move(lvl6));
 
     // Back to Menu Button
     Button backButton(font, "Back to Menu", {centerX, 480.0f}, {240.0f, 50.0f});
     backButton.setCallback([this]() {
-        m_sceneManager.replace(std::make_unique<MainMenuScene>(m_sceneManager, m_input, m_assets, m_window));
+        m_sceneManager.replace(std::make_unique<MainMenuScene>(m_sceneManager, m_input, m_assets, m_audio, m_window));
     });
     m_buttons.push_back(std::move(backButton));
 }

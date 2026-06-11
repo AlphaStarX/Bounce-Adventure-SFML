@@ -185,14 +185,20 @@ void Player::resolvePlatformCollisions(const std::vector<sf::FloatRect>& platfor
 
         if (result.normal.y < -0.5f)
         {
-            const float impactSpeed = m_body.velocity.y;
-            m_body.grounded = true;
-            m_body.velocity.y = 0.0f;
-
-            if (impactSpeed > PhysicsConstants::MinimumBounceImpact)
+            // During ascent, don't ground the player — prevents the platform
+            // from "catching" the circle when it still overlaps the tile it
+            // jumped from on the first frame of the jump.
+            if (m_body.velocity.y >= 0.0f)
             {
-                m_body.velocity.y = PhysicsConstants::LandingBounceVelocity;
-                m_body.grounded = false;
+                const float impactSpeed = m_body.velocity.y;
+                m_body.grounded = true;
+                m_body.velocity.y = 0.0f;
+
+                if (impactSpeed > PhysicsConstants::MinimumBounceImpact)
+                {
+                    m_body.velocity.y = PhysicsConstants::LandingBounceVelocity;
+                    m_body.grounded = false;
+                }
             }
         }
         else if (result.normal.y > 0.5f && m_body.velocity.y < 0.0f)

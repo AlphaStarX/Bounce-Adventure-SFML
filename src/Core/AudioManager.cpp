@@ -1,7 +1,6 @@
 #include "BounceAdventure/Core/AudioManager.hpp"
 
 #include <SFML/Config.hpp>
-#include <SFML/Audio/SoundSource.hpp>
 
 #include <algorithm>
 #include <stdexcept>
@@ -10,37 +9,33 @@ namespace BounceAdventure
 {
 void AudioManager::loadSound(const std::string& id, const std::filesystem::path& path)
 {
-    if (m_soundBuffers.find(id) != m_soundBuffers.end())
+    if (m_sounds.find(id) != m_sounds.end())
     {
         return;
     }
 
-    sf::SoundBuffer buffer;
-    if (!buffer.loadFromFile(path.string()))
+    auto slot = std::make_unique<SoundSlot>();
+    slot->buffer = std::make_unique<sf::SoundBuffer>();
+    if (!slot->buffer->loadFromFile(path.string()))
     {
         throw std::runtime_error("Failed to load sound: " + path.string());
     }
 
-    m_soundBuffers.emplace(id, std::move(buffer));
+    slot->sound = std::make_unique<sf::Sound>(*slot->buffer);
+    slot->sound->setVolume(m_soundVolume);
+
+    m_sounds.emplace(id, std::move(*slot));
 }
 
 void AudioManager::playSound(const std::string& id)
 {
-    removeStoppedSounds();
-
-    const auto buffer = m_soundBuffers.find(id);
-    if (buffer == m_soundBuffers.end())
+    const auto it = m_sounds.find(id);
+    if (it == m_sounds.end())
     {
-        throw std::runtime_error("Sound has not been loaded: " + id);
+        return; // sound not loaded — silently ignore (avoid crash on missing asset)
     }
 
-    sf::Sound sound(buffer->second);
-#if SFML_VERSION_MAJOR < 3
-    sound.setBuffer(buffer->second);
-#endif
-    sound.setVolume(m_soundVolume);
-    sound.play();
-    m_activeSounds.push_back(sound);
+    it->second.sound->play();
 }
 
 void AudioManager::playMusic(const std::filesystem::path& path, bool loop)
@@ -72,6 +67,10 @@ void AudioManager::stopMusic()
 void AudioManager::setSoundVolume(float volume)
 {
     m_soundVolume = std::clamp(volume, 0.0f, 100.0f);
+    for (auto& [id, slot] : m_sounds)
+    {
+        slot.sound->setVolume(m_soundVolume);
+    }
 }
 
 void AudioManager::setMusicVolume(float volume)
@@ -81,22 +80,5 @@ void AudioManager::setMusicVolume(float volume)
     {
         m_music->setVolume(m_musicVolume);
     }
-}
-
-void AudioManager::removeStoppedSounds()
-{
-    m_activeSounds.erase(
-        std::remove_if(
-            m_activeSounds.begin(),
-            m_activeSounds.end(),
-            [](const sf::Sound& sound)
-            {
-#if SFML_VERSION_MAJOR >= 3
-                return sound.getStatus() == sf::SoundSource::Status::Stopped;
-#else
-                return sound.getStatus() == sf::SoundSource::Stopped;
-#endif
-            }),
-        m_activeSounds.end());
 }
 }

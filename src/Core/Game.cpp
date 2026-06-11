@@ -16,7 +16,7 @@ Game::Game()
     : m_windowManager(GameConfig::WindowWidth, GameConfig::WindowHeight, GameConfig::WindowTitle)
 {
     m_windowManager.window().setFramerateLimit(GameConfig::FrameRateLimit);
-    m_sceneManager.push(std::make_unique<MainMenuScene>(m_sceneManager, m_inputManager, m_assetManager, m_windowManager.window()));
+    m_sceneManager.push(std::make_unique<MainMenuScene>(m_sceneManager, m_inputManager, m_assetManager, m_audioManager, m_windowManager.window()));
     m_sceneManager.processPendingChanges();
 }
 

@@ -1,6 +1,7 @@
 #pragma once
 
 #include "BounceAdventure/Core/AssetManager.hpp"
+#include "BounceAdventure/Core/AudioManager.hpp"
 #include "BounceAdventure/Core/InputManager.hpp"
 #include "BounceAdventure/Core/Scene.hpp"
 #include "BounceAdventure/Gameplay/HealthSystem.hpp"
@@ -18,7 +19,7 @@ class SceneManager;
 class GameScene final : public Scene
 {
 public:
-    explicit GameScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, sf::RenderWindow& window, int startLevel = 1, int coins = 0);
+    explicit GameScene(SceneManager& sceneManager, InputManager& input, AssetManager& assets, AudioManager& audio, sf::RenderWindow& window, int startLevel = 1, int coins = 0);
 
     void handleEvent(const sf::Event& event) override;
     void update(float deltaTime) override;
@@ -39,6 +40,7 @@ private:
     SceneManager& m_sceneManager;
     InputManager& m_input;
     AssetManager& m_assets;
+    AudioManager& m_audio;
     sf::RenderWindow& m_window;
     HUD m_hud;
     HealthSystem m_health;
@@ -49,6 +51,8 @@ private:
 
     sf::Vector2f m_checkpointPosition{};
     int m_coinsCollected = 0;
+
+    float m_invulnerabilityTimer = 0.0f;
 
     bool m_levelComplete = false;
     float m_levelCompleteTimer = 0.0f;
