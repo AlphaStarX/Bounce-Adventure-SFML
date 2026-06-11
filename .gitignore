@@ -1,0 +1,10 @@
+build/
+build-*/
+
+# Local editor and OS metadata
+.vs/
+.vscode/
+*.user
+*.suo
+Thumbs.db
+Desktop.ini
