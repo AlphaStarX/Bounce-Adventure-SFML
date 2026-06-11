@@ -9,8 +9,8 @@ GameCompleteScene::GameCompleteScene(SceneManager& sceneManager, InputManager& i
     , m_input(input)
     , m_assets(assets)
     , m_window(window)
-    , m_title(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "CONGRATULATIONS!", 44)
-    , m_statsLabel(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "You Completed All Levels!\nTotal Coins: " + std::to_string(coins), 24)
+    , m_title(assets.font("default", "assets/fonts/arial.ttf"), "CONGRATULATIONS!", 44)
+    , m_statsLabel(assets.font("default", "assets/fonts/arial.ttf"), "You Completed All Levels!\nTotal Coins: " + std::to_string(coins), 24)
 {
     const float centerX = static_cast<float>(GameConfig::WindowWidth) * 0.5f;
 
@@ -22,7 +22,7 @@ GameCompleteScene::GameCompleteScene(SceneManager& sceneManager, InputManager& i
     m_statsLabel.setFillColor(sf::Color::White);
     m_statsLabel.setPosition({centerX, 280.0f});
 
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 
     // Main Menu Button
     Button menuButton(font, "Main Menu", {centerX, 420.0f}, {240.0f, 50.0f});

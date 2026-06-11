@@ -10,8 +10,8 @@ LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager&
     , m_input(input)
     , m_assets(assets)
     , m_window(window)
-    , m_title(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "LEVEL COMPLETE!", 44)
-    , m_statsLabel(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "Coins Collected: " + std::to_string(coins), 24)
+    , m_title(assets.font("default", "assets/fonts/arial.ttf"), "LEVEL COMPLETE!", 44)
+    , m_statsLabel(assets.font("default", "assets/fonts/arial.ttf"), "Coins Collected: " + std::to_string(coins), 24)
 {
     const float centerX = static_cast<float>(GameConfig::WindowWidth) * 0.5f;
 
@@ -23,7 +23,7 @@ LevelCompleteScene::LevelCompleteScene(SceneManager& sceneManager, InputManager&
     m_statsLabel.setFillColor(sf::Color::White);
     m_statsLabel.setPosition({centerX, 280.0f});
 
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 
     // Next Level Button
     Button nextButton(font, "Next Level", {centerX, 380.0f}, {240.0f, 50.0f});

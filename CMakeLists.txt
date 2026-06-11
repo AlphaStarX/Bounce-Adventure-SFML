@@ -9,6 +9,10 @@ set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
 
+# Enable CTest (no-op if no tests are added; required for add_test() below).
+enable_testing()
+include(CTest)
+
 find_package(SFML 3 COMPONENTS Graphics Window System Audio QUIET)
 if (NOT SFML_FOUND)
     find_package(SFML 2.6 REQUIRED COMPONENTS graphics window system audio)
@@ -95,4 +99,10 @@ if (WIN32 AND DEFINED SFML_DIR)
                 $<TARGET_FILE_DIR:BounceAdventure>
         )
     endif()
+endif()
+
+# Tests (see tests/CMakeLists.txt for the source list).
+option(BA_BUILD_TESTS "Build the Bounce Adventure unit test executable" ON)
+if (BA_BUILD_TESTS)
+    add_subdirectory(tests)
 endif()

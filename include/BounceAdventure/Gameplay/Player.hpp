@@ -37,5 +37,11 @@ private:
     PhysicsBody m_body;
     sf::CircleShape m_shape;
     sf::Vector2f m_spawnPosition;
+
+    // Jump-feel state. m_timeSinceLeftGround counts up while airborne (used for coyote
+    // time). m_jumpBufferTimer counts down after a jump press (used for jump buffering).
+    // Both are reset on landing/grabbing ground.
+    float m_timeSinceLeftGround = 0.0f;
+    float m_jumpBufferTimer = -1.0f;
 };
 }

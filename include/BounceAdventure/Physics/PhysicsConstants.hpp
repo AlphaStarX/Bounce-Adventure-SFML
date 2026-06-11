@@ -13,5 +13,13 @@ struct PhysicsConstants
     static constexpr float TerminalVelocity = 1300.0f;
     static constexpr float LandingBounceVelocity = -170.0f;
     static constexpr float MinimumBounceImpact = 520.0f;
+
+    // Jump-feel tunables (see Player.cpp for usage).
+    // CoyoteTime:   window after walking off a ledge in which Jump still works.
+    // JumpBufferTime: window before landing in which a Jump press is remembered.
+    // JumpCutMultiplier: fraction of upward velocity retained when Jump is released mid-air.
+    static constexpr float CoyoteTime = 0.10f;
+    static constexpr float JumpBufferTime = 0.10f;
+    static constexpr float JumpCutMultiplier = 0.4f;
 };
 }

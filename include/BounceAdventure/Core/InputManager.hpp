@@ -29,6 +29,7 @@ public:
 
     bool isHeld(InputAction action) const;
     bool wasPressed(InputAction action) const;
+    bool wasReleased(InputAction action) const;
 
 private:
     static constexpr std::size_t ActionCount = static_cast<std::size_t>(InputAction::Count);
@@ -38,5 +39,6 @@ private:
 
     std::array<bool, ActionCount> m_held{};
     std::array<bool, ActionCount> m_pressed{};
+    std::array<bool, ActionCount> m_released{};
 };
 }

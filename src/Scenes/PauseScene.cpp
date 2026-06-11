@@ -10,7 +10,7 @@ PauseScene::PauseScene(SceneManager& sceneManager, InputManager& input, AssetMan
     , m_input(input)
     , m_assets(assets)
     , m_window(window)
-    , m_title(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "GAME PAUSED", 44)
+    , m_title(assets.font("default", "assets/fonts/arial.ttf"), "GAME PAUSED", 44)
 {
     const float centerX = static_cast<float>(GameConfig::WindowWidth) * 0.5f;
 
@@ -18,7 +18,7 @@ PauseScene::PauseScene(SceneManager& sceneManager, InputManager& input, AssetMan
     m_title.setFillColor(sf::Color(255, 200, 100));
     m_title.setPosition({centerX, 200.0f});
 
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 
     // Resume Button
     Button resumeButton(font, "Resume Game", {centerX, 340.0f}, {260.0f, 50.0f});

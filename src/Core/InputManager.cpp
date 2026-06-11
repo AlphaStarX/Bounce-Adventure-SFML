@@ -38,6 +38,10 @@ void InputManager::handleEvent(const sf::Event& event)
         }
         else
         {
+            if (m_held[i])
+            {
+                m_released[i] = true;
+            }
             m_held[i] = false;
         }
     }
@@ -46,6 +50,7 @@ void InputManager::handleEvent(const sf::Event& event)
 void InputManager::beginFrame()
 {
     m_pressed.fill(false);
+    m_released.fill(false);
 }
 
 bool InputManager::isHeld(InputAction action) const
@@ -56,6 +61,11 @@ bool InputManager::isHeld(InputAction action) const
 bool InputManager::wasPressed(InputAction action) const
 {
     return m_pressed[indexOf(action)];
+}
+
+bool InputManager::wasReleased(InputAction action) const
+{
+    return m_released[indexOf(action)];
 }
 
 std::size_t InputManager::indexOf(InputAction action)

@@ -10,8 +10,8 @@ MainMenuScene::MainMenuScene(SceneManager& sceneManager, InputManager& input, As
     , m_input(input)
     , m_assets(assets)
     , m_window(window)
-    , m_title(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "BOUNCE ADVENTURE", 54)
-    , m_subtitle(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "Modern C++ & SFML 2D Platformer", 20)
+    , m_title(assets.font("default", "assets/fonts/arial.ttf"), "BOUNCE ADVENTURE", 54)
+    , m_subtitle(assets.font("default", "assets/fonts/arial.ttf"), "Modern C++ & SFML 2D Platformer", 20)
 {
     const float centerX = static_cast<float>(GameConfig::WindowWidth) * 0.5f;
 
@@ -23,7 +23,7 @@ MainMenuScene::MainMenuScene(SceneManager& sceneManager, InputManager& input, As
     m_subtitle.setFillColor(sf::Color(180, 190, 200));
     m_subtitle.setPosition({centerX, 250.0f});
 
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 
     // Start Game Button
     Button startButton(font, "Start Game", {centerX, 340.0f}, {240.0f, 50.0f});

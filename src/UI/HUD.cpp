@@ -11,16 +11,16 @@ namespace BounceAdventure
 {
 #if SFML_VERSION_MAJOR >= 3
 HUD::HUD(AssetManager& assets)
-    : m_healthText(assets.font("default", "C:/Windows/Fonts/arial.ttf")),
-      m_coinText(assets.font("default", "C:/Windows/Fonts/arial.ttf")),
-      m_levelText(assets.font("default", "C:/Windows/Fonts/arial.ttf")),
-      m_messageText(assets.font("default", "C:/Windows/Fonts/arial.ttf"))
+    : m_healthText(assets.font("default", "assets/fonts/arial.ttf")),
+      m_coinText(assets.font("default", "assets/fonts/arial.ttf")),
+      m_levelText(assets.font("default", "assets/fonts/arial.ttf")),
+      m_messageText(assets.font("default", "assets/fonts/arial.ttf"))
 {
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 #else
 HUD::HUD(AssetManager& assets)
 {
-    const std::filesystem::path fontPath = std::filesystem::path("C:/Windows/Fonts/arial.ttf");
+    const std::filesystem::path fontPath = std::filesystem::path("assets/fonts/arial.ttf");
     const sf::Font& font = assets.font("default", fontPath);
 
     m_healthText.setFont(font);

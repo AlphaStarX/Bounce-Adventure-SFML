@@ -30,10 +30,27 @@ Player::Player(sf::Vector2f spawnPosition)
 
 void Player::update(float deltaTime, const InputManager& input, const std::vector<sf::FloatRect>& platformBounds)
 {
+    // Tick the jump-buffer timer down. A fresh jump press resets it in applyInput().
+    if (m_jumpBufferTimer > 0.0f)
+    {
+        m_jumpBufferTimer = std::max(0.0f, m_jumpBufferTimer - deltaTime);
+    }
+
     m_body.acceleration = {0.0f, PhysicsConstants::Gravity};
     applyInput(deltaTime, input);
     integrate(deltaTime);
     resolvePlatformCollisions(platformBounds);
+
+    // Coyote-time bookkeeping: reset when grounded, otherwise accumulate airborne time.
+    if (m_body.grounded)
+    {
+        m_timeSinceLeftGround = 0.0f;
+    }
+    else
+    {
+        m_timeSinceLeftGround += deltaTime;
+    }
+
     syncShape();
 }
 
@@ -116,10 +133,30 @@ void Player::applyInput(float deltaTime, const InputManager& input)
         }
     }
 
-    if (input.wasPressed(InputAction::Jump) && m_body.grounded)
+    // Jump buffering: remember the press for JumpBufferTime seconds. The actual jump
+    // will be consumed when the player is grounded (or in coyote time) within that window.
+    if (input.wasPressed(InputAction::Jump))
+    {
+        m_jumpBufferTimer = PhysicsConstants::JumpBufferTime;
+    }
+
+    const bool canJump = m_jumpBufferTimer > 0.0f
+                      && m_timeSinceLeftGround < PhysicsConstants::CoyoteTime;
+    if (canJump)
     {
         m_body.velocity.y = PhysicsConstants::JumpVelocity;
         m_body.grounded = false;
+        m_timeSinceLeftGround = PhysicsConstants::CoyoteTime; // block re-fire this airborne stretch
+        m_jumpBufferTimer = 0.0f;                              // consume the buffered press
+    }
+
+    // Variable jump height: releasing Jump mid-air caps the upward velocity so short
+    // taps produce short hops and held presses produce full jumps.
+    if (input.wasReleased(InputAction::Jump) && m_body.velocity.y < 0.0f)
+    {
+        m_body.velocity.y = std::max(
+            m_body.velocity.y,
+            PhysicsConstants::JumpVelocity * PhysicsConstants::JumpCutMultiplier);
     }
 }
 

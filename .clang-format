@@ -1,0 +1,61 @@
+# Bounce Adventure — clang-format style
+#
+# Goals:
+#   * Allman braces (every `{` on its own line) — matches the existing codebase.
+#   * 4-space indent, no tabs.
+#   * Pointer / reference alignment to the type (`int* x` not `int *x`).
+#   * Conservative: don't reformat code that already looks reasonable.
+
+BasedOnStyle: LLVM
+Language: Cpp
+Standard: c++17
+
+# Braces on their own line for everything (functions, namespaces, control flow).
+BreakBeforeBraces: Allman
+
+# Indentation.
+IndentWidth: 4
+TabWidth: 4
+UseTab: Never
+ContinuationIndentWidth: 4
+NamespaceIndentation: None
+
+# Keep lines reasonably long but not insane — most existing lines are <100.
+ColumnLimit: 110
+
+# Pointer / reference alignment: bind to the type, not the name.
+PointerAlignment: Left
+ReferenceAlignment: Left
+
+# Don't move the { of a short braced init to a new line.
+Cpp11BracedListStyle: false
+
+# Allow short control flow on one line (the existing code has some of these).
+AllowShortBlocksOnASingleLine: Never
+AllowShortCaseLabelsOnASingleLine: false
+AllowShortIfStatementsOnASingleLine: false
+AllowShortLoopsOnASingleLine: false
+
+# Spaces inside parens: parens hugging the inside, no padding outside.
+SpaceAfterCStyleCast: false
+SpaceAfterTemplateKeyword: false
+SpaceBeforeAssignmentOperators: true
+SpaceBeforeParens: ControlStatements
+SpaceInEmptyParentheses: false
+SpacesBeforeTrailingComments: 1
+SpacesInAngles: false
+SpacesInContainerLiterals: false
+SpacesInParentheses: false
+SpacesInSquareBrackets: false
+
+# Don't sort includes; the existing hand-curated order is intentional.
+SortIncludes: false
+
+# Macros: keep the alignment of backslash continuations.
+AlignConsecutiveMacros: false
+AlignConsecutiveAssignments: false
+AlignConsecutiveDeclarations: false
+
+# A single blank line between members is fine; collapse extras.
+MaxEmptyLinesToKeep: 1
+KeepEmptyLinesAtTheStartOfBlocks: false

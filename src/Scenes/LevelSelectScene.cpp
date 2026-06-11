@@ -10,7 +10,7 @@ LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& inp
     , m_input(input)
     , m_assets(assets)
     , m_window(window)
-    , m_title(assets.font("default", "C:/Windows/Fonts/arial.ttf"), "SELECT LEVEL", 44)
+    , m_title(assets.font("default", "assets/fonts/arial.ttf"), "SELECT LEVEL", 44)
 {
     const float centerX = static_cast<float>(GameConfig::WindowWidth) * 0.5f;
 
@@ -18,7 +18,7 @@ LevelSelectScene::LevelSelectScene(SceneManager& sceneManager, InputManager& inp
     m_title.setFillColor(sf::Color(140, 200, 255));
     m_title.setPosition({centerX, 180.0f});
 
-    const sf::Font& font = assets.font("default", "C:/Windows/Fonts/arial.ttf");
+    const sf::Font& font = assets.font("default", "assets/fonts/arial.ttf");
 
     // Level buttons in a 2x3 grid
     const float y1 = 300.0f;
